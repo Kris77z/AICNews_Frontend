@@ -1,36 +1,154 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Pipeline Dashboard - L1-L6 可视化系统
 
-## Getting Started
+前端可视化界面，用于展示和监控 Telegram 新闻 Pipeline 的执行流程。
 
-First, run the development server:
+## 🚀 快速开始
+
+### 安装依赖
+
+```bash
+npm install
+```
+
+### 运行开发服务器
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+访问 [http://localhost:3000](http://localhost:3000) 查看界面。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 构建生产版本
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+## 📁 项目结构
 
-To learn more about Next.js, take a look at the following resources:
+```
+frontend/
+├── app/                    # Next.js App Router 页面
+│   ├── page.tsx           # 首页 Dashboard
+│   ├── api/               # API Routes（读取 JSON 文件）
+│   │   ├── pipeline/      # Pipeline 相关 API
+│   │   └── cost/          # 成本报告相关 API
+│   ├── pipeline/[id]/     # Pipeline 详情页（待实现）
+│   ├── history/           # 历史记录页（待实现）
+│   ├── cost/              # 成本分析页（待实现）
+│   └── settings/          # 配置管理页（待实现）
+│
+├── components/            # React 组件
+│   ├── ui/               # shadcn/ui 基础组件
+│   ├── PipelineFlow.tsx  # 流程图组件
+│   ├── NodeStatus.tsx    # 节点状态组件
+│   └── StatsCards.tsx    # 统计卡片组件
+│
+├── lib/                   # 工具函数和类型定义
+│   ├── types.ts          # TypeScript 类型定义
+│   ├── utils.ts          # 工具函数
+│   └── pipeline-utils.ts # Pipeline 相关工具函数
+│
+└── app/globals.css       # 全局样式（Tailwind 4 + 主题色）
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🎨 主题配置
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+项目使用 **Nature** 主题色（绿色系），配置在 `app/globals.css` 中。
 
-## Deploy on Vercel
+- **主色调**: `#2e7d32` (绿色)
+- **背景色**: `#f8f5f0` (浅米色)
+- **字体**: Montserrat (Sans), Merriweather (Serif), Source Code Pro (Mono)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📊 功能特性
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### ✅ 已实现
+
+- [x] 项目初始化和配置
+- [x] shadcn/ui 组件库集成
+- [x] Tailwind 4 主题配置
+- [x] API Routes（读取 JSON 文件）
+- [x] Pipeline 流程图可视化
+- [x] 节点状态展示
+- [x] 统计卡片组件
+- [x] 首页 Dashboard
+
+### 🚧 待实现
+
+- [ ] Pipeline 详情页（展示完整数据）
+- [ ] 历史记录列表页
+- [ ] 成本分析页（图表展示）
+- [ ] 配置管理页（模型切换）
+- [ ] 事件卡片组件
+- [ ] 文章预览组件
+- [ ] 成本图表组件
+
+## 🔧 API Routes
+
+### Pipeline API
+
+- `GET /api/pipeline/list` - 获取所有 Pipeline 结果列表
+- `GET /api/pipeline/[id]` - 获取单个 Pipeline 结果详情
+
+### Cost API
+
+- `GET /api/cost/list` - 获取所有成本报告列表
+- `GET /api/cost/[id]` - 获取单个成本报告详情
+
+## 📝 数据源
+
+前端通过 Next.js API Routes 直接读取以下目录的 JSON 文件：
+
+- `../data/pipeline_results/` - Pipeline 执行结果
+- `../data/cost_reports/` - 成本报告
+
+## 🛠️ 技术栈
+
+- **框架**: Next.js 16 (App Router)
+- **UI 库**: shadcn/ui
+- **样式**: Tailwind CSS 4
+- **图表**: Recharts
+- **语言**: TypeScript
+- **字体**: Google Fonts (Montserrat, Merriweather, Source Code Pro)
+
+## 📦 主要依赖
+
+```json
+{
+  "next": "^16.0.4",
+  "react": "^19.2.0",
+  "recharts": "^2.10.0",
+  "date-fns": "^3.0.0",
+  "clsx": "^2.0.0",
+  "tailwind-merge": "^2.0.0"
+}
+```
+
+## 🎯 下一步计划
+
+1. **实现 Pipeline 详情页**
+   - 展示原始消息列表
+   - 展示结构化事件
+   - 展示事件聚合簇
+   - 展示决策结果
+   - 展示文章预览（如有）
+
+2. **实现历史记录页**
+   - 列表展示所有执行记录
+   - 支持筛选和搜索
+   - 快速跳转到详情页
+
+3. **实现成本分析页**
+   - 成本趋势图表
+   - 节点成本分布
+   - 成本明细表格
+
+4. **实现配置管理页**
+   - 读取当前配置
+   - 模型切换
+   - 参数调整
+
+## 📄 许可证
+
+与主项目保持一致。

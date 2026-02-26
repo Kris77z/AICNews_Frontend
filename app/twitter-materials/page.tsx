@@ -124,76 +124,15 @@ export default function TwitterMaterialsPage() {
 
             {/* Articles List */}
             <div className="space-y-6">
-                {articles.map((article, index) => {
-                    const mats = article.twitter_materials;
-                    const hasShort = Boolean(mats?.short_tweet);
-                    const hasLong = Boolean(mats?.long_tweet);
-                    const defaultTab = hasShort ? "short" : "long";
-                    const [activeTab, setActiveTab] = useState(defaultTab);
-
-                    const currentText = activeTab === "short" ? mats?.short_tweet : mats?.long_tweet;
-                    const copyKey = `${activeTab}-${index}`;
-
-                    return (
-                        <Card key={`${article.timestamp}-${index}`} className="overflow-hidden py-0 gap-0">
-                            <CardContent className="p-4">
-                                {/* 标题 + 时间 */}
-                                <h3 className="font-medium text-base leading-snug">
-                                    {article.title}
-                                </h3>
-                                <span className="text-xs text-muted-foreground mt-1 block">
-                                    {new Date(article.timestamp).toLocaleString('zh-CN', {
-                                        month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
-                                    })}
-                                </span>
-
-                                {/* Tab 切换 + 复制按钮同行 */}
-                                <div className="mt-3">
-                                    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                                        <div className="flex items-center justify-between mb-3">
-                                            <TabsList>
-                                                {hasShort && <TabsTrigger value="short">短推文</TabsTrigger>}
-                                                {hasLong && <TabsTrigger value="long">长推文</TabsTrigger>}
-                                            </TabsList>
-                                            <Button
-                                                size="sm"
-                                                variant="outline"
-                                                className="h-7 text-xs"
-                                                onClick={() => handleCopy(currentText!, copyKey)}
-                                            >
-                                                {copiedStates[copyKey] ? (
-                                                    <><Check className="w-3 h-3 mr-1" /> 已复制</>
-                                                ) : (
-                                                    <><Copy className="w-3 h-3 mr-1" /> 复制</>
-                                                )}
-                                            </Button>
-                                        </div>
-
-                                        {hasShort && (
-                                            <TabsContent value="short" className="mt-0" data-color-mode="light">
-                                                <MarkdownPreview
-                                                    source={mats!.short_tweet}
-                                                    style={{ background: 'transparent', fontSize: '14px' }}
-                                                    wrapperElement={{ "data-color-mode": "light" }}
-                                                />
-                                            </TabsContent>
-                                        )}
-
-                                        {hasLong && (
-                                            <TabsContent value="long" className="mt-0" data-color-mode="light">
-                                                <MarkdownPreview
-                                                    source={mats!.long_tweet}
-                                                    style={{ background: 'transparent', fontSize: '14px' }}
-                                                    wrapperElement={{ "data-color-mode": "light" }}
-                                                />
-                                            </TabsContent>
-                                        )}
-                                    </Tabs>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    );
-                })}
+                {articles.map((article, index) => (
+                    <ArticleCard
+                        key={`${article.timestamp}-${index}`}
+                        article={article}
+                        index={index}
+                        handleCopy={handleCopy}
+                        copiedStates={copiedStates}
+                    />
+                ))}
             </div>
 
             {/* Empty State */}
@@ -203,5 +142,84 @@ export default function TwitterMaterialsPage() {
                 </div>
             )}
         </div>
+    );
+}
+
+function ArticleCard({
+    article,
+    index,
+    handleCopy,
+    copiedStates
+}: {
+    article: Article;
+    index: number;
+    handleCopy: (text: string, key: string) => void;
+    copiedStates: { [key: string]: boolean };
+}) {
+    const mats = article.twitter_materials;
+    const hasShort = Boolean(mats?.short_tweet);
+    const hasLong = Boolean(mats?.long_tweet);
+    const defaultTab = hasShort ? "short" : "long";
+    const [activeTab, setActiveTab] = useState(defaultTab);
+
+    const currentText = activeTab === "short" ? mats?.short_tweet : mats?.long_tweet;
+    const copyKey = `${activeTab}-${index}`;
+
+    return (
+        <Card className="overflow-hidden py-0 gap-0">
+            <CardContent className="p-4">
+                <h3 className="font-medium text-base leading-snug">
+                    {article.title}
+                </h3>
+                <span className="text-xs text-muted-foreground mt-1 block">
+                    {new Date(article.timestamp).toLocaleString('zh-CN', {
+                        month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
+                    })}
+                </span>
+
+                <div className="mt-3">
+                    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                        <div className="flex items-center justify-between mb-3">
+                            <TabsList>
+                                {hasShort && <TabsTrigger value="short">短推文</TabsTrigger>}
+                                {hasLong && <TabsTrigger value="long">长推文</TabsTrigger>}
+                            </TabsList>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-7 text-xs"
+                                onClick={() => handleCopy(currentText!, copyKey)}
+                            >
+                                {copiedStates[copyKey] ? (
+                                    <><Check className="w-3 h-3 mr-1" /> 已复制</>
+                                ) : (
+                                    <><Copy className="w-3 h-3 mr-1" /> 复制</>
+                                )}
+                            </Button>
+                        </div>
+
+                        {hasShort && (
+                            <TabsContent value="short" className="mt-0" data-color-mode="light">
+                                <MarkdownPreview
+                                    source={mats!.short_tweet}
+                                    style={{ background: 'transparent', fontSize: '14px' }}
+                                    wrapperElement={{ "data-color-mode": "light" }}
+                                />
+                            </TabsContent>
+                        )}
+
+                        {hasLong && (
+                            <TabsContent value="long" className="mt-0" data-color-mode="light">
+                                <MarkdownPreview
+                                    source={mats!.long_tweet}
+                                    style={{ background: 'transparent', fontSize: '14px' }}
+                                    wrapperElement={{ "data-color-mode": "light" }}
+                                />
+                            </TabsContent>
+                        )}
+                    </Tabs>
+                </div>
+            </CardContent>
+        </Card>
     );
 }

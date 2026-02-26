@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, RefreshCw, Star, DollarSign } from "lucide-react";
 
 // API 配置
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
 
 interface Article {
     timestamp: string;
@@ -99,16 +99,8 @@ export default function FeedPage() {
         <div className="px-4 py-6 sm:container sm:mx-auto sm:py-8 max-w-4xl space-y-4 sm:space-y-6">
             {/* Header */}
             <div className="flex items-center justify-between gap-2">
-                <div className="min-w-0 flex-1">
-                    <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Feeds</h1>
-                    <p className="text-muted-foreground mt-1 text-sm sm:text-base truncate">
-                        共 {total} 篇
-                        {lastUpdated && (
-                            <span className="ml-2 text-xs">
-                                · {lastUpdated.toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" })}
-                            </span>
-                        )}
-                    </p>
+                <div className="space-y-1 min-w-0 flex-1">
+                    <h1 className="text-2xl font-bold tracking-tight">文章记录</h1>
                 </div>
                 <Button
                     variant="outline"

@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Newspaper, PenLine } from "lucide-react"
+import { Newspaper, PenLine, Twitter } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export function MobileNav() {
@@ -10,14 +10,19 @@ export function MobileNav() {
 
     const items = [
         {
-            title: "文章",
-            url: "/feed",
-            icon: Newspaper,
-        },
-        {
             title: "录入",
             url: "/manual",
             icon: PenLine,
+        },
+        {
+            title: "推文",
+            url: "/twitter-materials",
+            icon: Twitter,
+        },
+        {
+            title: "文章",
+            url: "/feed",
+            icon: Newspaper,
         },
     ]
 

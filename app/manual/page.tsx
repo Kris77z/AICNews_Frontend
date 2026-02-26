@@ -8,7 +8,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader2, Send, CheckCircle2, AlertCircle } from "lucide-react";
 
 // API 配置（与 feed 页面保持一致）
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
 
 export default function ManualInputPage() {
     const [inputText, setInputText] = useState("");
@@ -47,35 +47,52 @@ export default function ManualInputPage() {
         setErrorMsg("");
 
         try {
-            const response = await fetch(`${API_BASE}/api/trigger`, {
+            // 1. 提交任务
+            const triggerResponse = await fetch(`${API_BASE}/api/trigger`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     text: inputText,
-                    user_id: "web_operator", // 标记来源
+                    user_id: "web_operator",
                 }),
             });
 
-            const data = await response.json();
+            const triggerData = await triggerResponse.json();
 
-            if (!response.ok) {
-                throw new Error(data.error || "请求失败");
-            }
+            if (!triggerResponse.ok) throw new Error(triggerData.error || "提交失败");
 
-            if (data.success) {
-                setStatus("success");
-                setResult(data.article);
-                setInputText(""); // 成功后清空输入框
-            } else {
-                throw new Error(data.error || "Pipeline 执行未成功");
-            }
+            const taskId = triggerData.task_id;
+            if (!taskId) throw new Error("未获取到任务ID");
+
+            // 2. 轮询状态
+            const pollInterval = setInterval(async () => {
+                try {
+                    const statusRes = await fetch(`${API_BASE}/api/tasks/${taskId}`);
+                    const statusData = await statusRes.json();
+
+                    if (statusData.status === "success") {
+                        clearInterval(pollInterval);
+                        setStatus("success");
+                        setResult(statusData.result.article);
+                        setInputText("");
+                        setIsLoading(false);
+                    } else if (statusData.status === "failed") {
+                        clearInterval(pollInterval);
+                        throw new Error(statusData.error || "任务执行失败");
+                    }
+                    // status === "processing", 继续轮询
+                } catch (err: any) {
+                    clearInterval(pollInterval);
+                    setStatus("error");
+                    setErrorMsg(err.message || "轮询出错");
+                    setIsLoading(false);
+                }
+            }, 2000); // 每2秒查询一次
+
         } catch (err: any) {
-            console.error("提交失败:", err);
+            console.error("操作失败:", err);
             setStatus("error");
             setErrorMsg(err.message || "未知错误");
-        } finally {
             setIsLoading(false);
         }
     };
@@ -84,9 +101,6 @@ export default function ManualInputPage() {
         <div className="px-4 py-6 sm:container sm:mx-auto sm:py-10 max-w-2xl space-y-6">
             <div className="space-y-1">
                 <h1 className="text-2xl font-bold tracking-tight">手动录入</h1>
-                <p className="text-muted-foreground text-sm">
-                    AI 将自动提取信息并生成文章
-                </p>
             </div>
 
             {/* 极简输入区 */}

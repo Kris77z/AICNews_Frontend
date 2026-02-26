@@ -5,6 +5,7 @@ import {
     Newspaper,
     PenLine,
     Bot,
+    Twitter
 } from "lucide-react"
 import { motion } from "framer-motion"
 
@@ -26,14 +27,19 @@ import { TeamSwitcher } from "./team-switcher"
 // 导航配置 - 只保留核心页面
 const dashboardRoutes: Route[] = [
     {
-        title: "文章",
-        url: "/feed",
-        icon: <Newspaper className="size-4" />,
-    },
-    {
         title: "手动录入",
         url: "/manual",
         icon: <PenLine className="size-4" />,
+    },
+    {
+        title: "推文素材",
+        url: "/twitter-materials",
+        icon: <Twitter className="size-4" />,
+    },
+    {
+        title: "文章",
+        url: "/feed",
+        icon: <Newspaper className="size-4" />,
     },
 ]
 

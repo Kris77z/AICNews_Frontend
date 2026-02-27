@@ -3,9 +3,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, RefreshCw, Copy, Check, ChevronDown, ChevronUp } from "lucide-react";
+import { Loader2, RefreshCw, Copy, Check, ChevronDown, ChevronUp, FileText } from "lucide-react";
 import dynamic from 'next/dynamic';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useCopy } from "@/hooks/use-copy";
 
 const MarkdownPreview = dynamic(() => import('@uiw/react-markdown-preview'), { ssr: false });
 
@@ -24,7 +25,6 @@ interface Article {
         short_tweet?: string;
         long_tweet?: string;
     };
-    research_brief?: string;
 }
 
 interface ArticlesResponse {
@@ -41,7 +41,7 @@ export default function TwitterMaterialsPage() {
     const [total, setTotal] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [copiedStates, setCopiedStates] = useState<{ [key: string]: boolean }>({});
+    const { copiedStates, handleCopy } = useCopy();
     const [expandedCards, setExpandedCards] = useState<Set<number>>(new Set());
 
     const toggleExpand = (index: number) => {
@@ -81,19 +81,6 @@ export default function TwitterMaterialsPage() {
     useEffect(() => {
         fetchArticles();
     }, [fetchArticles]);
-
-    const handleCopy = async (text: string, key: string) => {
-        if (!text) return;
-        try {
-            await navigator.clipboard.writeText(text);
-            setCopiedStates((prev) => ({ ...prev, [key]: true }));
-            setTimeout(() => {
-                setCopiedStates((prev) => ({ ...prev, [key]: false }));
-            }, 2000);
-        } catch (err) {
-            console.error("复制失败:", err);
-        }
-    };
 
     return (
         <div className="px-4 py-6 sm:container sm:mx-auto sm:py-8 max-w-4xl space-y-4 sm:space-y-6">
@@ -163,7 +150,7 @@ function ArticleCard({
 }: {
     article: Article;
     index: number;
-    handleCopy: (text: string, key: string) => void;
+    handleCopy: (text: string, key: string, mode: "markdown" | "rich") => void;
     copiedStates: { [key: string]: boolean };
     isExpanded: boolean;
     onToggleExpand: () => void;
@@ -174,8 +161,9 @@ function ArticleCard({
     const defaultTab = hasShort ? "short" : "long";
     const [activeTab, setActiveTab] = useState(defaultTab);
 
-    const currentText = activeTab === "short" ? mats?.short_tweet : mats?.long_tweet;
-    const copyKey = `${activeTab}-${index}`;
+    const currentText = activeTab === "short" ? mats?.short_tweet || "" : mats?.long_tweet || "";
+    const mdKey = `${activeTab}-md-${index}`;
+    const richKey = `${activeTab}-rich-${index}`;
 
     return (
         <Card className="overflow-hidden py-0 gap-0">
@@ -213,18 +201,34 @@ function ArticleCard({
                                     {hasShort && <TabsTrigger value="short">短推文</TabsTrigger>}
                                     {hasLong && <TabsTrigger value="long">长推文</TabsTrigger>}
                                 </TabsList>
-                                <Button
-                                    size="sm"
-                                    variant="outline"
-                                    className="h-7 text-xs"
-                                    onClick={() => handleCopy(currentText!, copyKey)}
-                                >
-                                    {copiedStates[copyKey] ? (
-                                        <><Check className="w-3 h-3 mr-1" /> 已复制</>
-                                    ) : (
-                                        <><Copy className="w-3 h-3 mr-1" /> 复制</>
-                                    )}
-                                </Button>
+                                <div className="flex items-center gap-2">
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        className="h-7 text-xs"
+                                        onClick={() => handleCopy(currentText, mdKey, "markdown")}
+                                        disabled={!currentText}
+                                    >
+                                        {copiedStates[mdKey] ? (
+                                            <><Check className="w-3 h-3 mr-1" /> 已复制</>
+                                        ) : (
+                                            <><Copy className="w-3 h-3 mr-1" /> Markdown</>
+                                        )}
+                                    </Button>
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        className="h-7 text-xs"
+                                        onClick={() => handleCopy(currentText, richKey, "rich")}
+                                        disabled={!currentText}
+                                    >
+                                        {copiedStates[richKey] ? (
+                                            <><Check className="w-3 h-3 mr-1" /> 已复制</>
+                                        ) : (
+                                            <><FileText className="w-3 h-3 mr-1" /> 富文本</>
+                                        )}
+                                    </Button>
+                                </div>
                             </div>
 
                             {hasShort && (

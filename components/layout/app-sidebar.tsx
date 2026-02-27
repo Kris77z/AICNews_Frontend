@@ -5,7 +5,8 @@ import {
     Newspaper,
     PenLine,
     Bot,
-    Twitter
+    Twitter,
+    BookOpen
 } from "lucide-react"
 import { motion } from "framer-motion"
 
@@ -30,6 +31,11 @@ const dashboardRoutes: Route[] = [
         title: "手动录入",
         url: "/manual",
         icon: <PenLine className="size-4" />,
+    },
+    {
+        title: "素材源",
+        url: "/material-sources",
+        icon: <BookOpen className="size-4" />,
     },
     {
         title: "推文素材",

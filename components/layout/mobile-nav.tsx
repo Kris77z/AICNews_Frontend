@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Newspaper, PenLine, Twitter } from "lucide-react"
+import { Newspaper, PenLine, Twitter, BookOpen } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export function MobileNav() {
@@ -13,6 +13,11 @@ export function MobileNav() {
             title: "录入",
             url: "/manual",
             icon: PenLine,
+        },
+        {
+            title: "素材源",
+            url: "/material-sources",
+            icon: BookOpen,
         },
         {
             title: "推文",

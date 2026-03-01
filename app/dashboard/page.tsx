@@ -59,9 +59,7 @@ export default async function DashboardPage(props: {
                     <p className="text-muted-foreground mt-2">Telegram 新闻生成流水线监控面板</p>
                 </div>
                 <div className="flex gap-2">
-                    <Link href="/processes">
-                        <Button variant="default">进程管理</Button>
-                    </Link>
+
                     <Link href="/history">
                         <Button variant="outline">历史记录</Button>
                     </Link>
@@ -171,8 +169,8 @@ export default async function DashboardPage(props: {
                             <p className="text-sm text-muted-foreground mt-2">
                                 请先运行 Pipeline 生成执行记录
                             </p>
-                            <Link href="/processes">
-                                <Button className="mt-4">前往进程管理</Button>
+                            <Link href="/manual">
+                                <Button className="mt-4">前往手动录入</Button>
                             </Link>
                         </div>
                     )}
